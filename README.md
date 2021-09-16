@@ -28,7 +28,7 @@ Note that the library is only tested on Linux but is compatible with MacOS and W
 clone the repostory and by composer run 
 
 ```bash
-$ composer install
+$ composer update
 ```
 ثم بعدها  
 

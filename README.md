@@ -13,7 +13,7 @@
  - symfony process
  - php shell
  - chrome-php
- - 
+ 
 
 ## Requirements
 
@@ -30,6 +30,22 @@ clone the repostory and by composer run
 ```bash
 $ composer install
 ```
+ثم بعدها  
+
+```bash
+$ php artisan serve
+```
+
+الروابط التي يمكنك الانتقال اليها عن طريق المتصفح  :
+- 127.0.0.1:8000/ باستخدام  HeadlessChromium 
+- 127.0.0.1:8000/phpchromepdf باستخدام  dawood\phpChrome\Chrome package 
+- 127.0.0.1:8000/symfonyProcess باستخدام  symfonyProcess with wkhtmltopdf library 
+- 127.0.0.1:8000/runProsses باستخدام  runProsses by php shell
+
+وغيرها يمكنك الإطلاع عليها في الكود 
+route/web.php, 
+HomeController 
+
 
 ## License
 

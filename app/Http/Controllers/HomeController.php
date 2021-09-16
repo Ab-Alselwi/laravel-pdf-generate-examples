@@ -85,6 +85,70 @@ class HomeController extends Controller
         return $innerHTML;*/
     }
 
+    public function runProsses(){
+        $html = '<html><body>Test to my awesome PDF 😄</body></html>';
+
+        $descriptors = [
+            0 => ['pipe', 'r'],  // we will write to stdin
+            1 => ['pipe', 'w'],  // we will read from stdout
+            2 => ['pipe', 'w'],  // we will also read from stderr
+        ];
+
+        // this array will contain three pointers to all three pipes
+        $pipes = [];
+
+        // we're starting the process now
+        $process = proc_open('wkhtmltopdf - -', $descriptors, $pipes);
+        if (is_resource($process)) {
+            // the process has been opened, we can send input data
+            fwrite($pipes[0], $html);
+
+            // you have to close the stream after use
+            fclose($pipes[0]);
+
+            // now we're reading binary output
+            // PHP will wait until the stream is complete
+            $pdf = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+            echo "done 😄 download your pdf ";
+            $errors = stream_get_contents($pipes[2]);
+            fclose($pipes[2]);
+
+            // all pipes must be closed now to avoid a deadlock
+            $exitCode = proc_close($process);
+            return response()->streamDownload(function () use (&$pdf) {
+                    echo $pdf;
+                }, 'My awesome PDF.pdf', [
+                    'Content-Type' => 'application/pdf',
+                ]);
+          //   return $pdf->download('droub.pdf');
+        }
+
+    }
+
+    public function symfonyProcess(){
+       //wkhtmltopdf http://google.com google.pdf 
+            $process = new Process(['wkhtmltopdf', 'https://droub.net', 'droub.pdf']);
+        // $process = new Process(['wkhtmltopdf', '-', '-']);
+      //   $html="test";
+        //$process->setInput($html);
+
+        try {
+            // wait for process execution
+            $process->mustRun();
+
+              $pdf = $process->getOutput();
+             echo "we generated awesome PDF by symfonyProcess look at public folder 😄 ";
+             /* return response()->streamDownload(function () use (&$pdf) {
+                    echo $pdf;
+                }, 'My awesome PDF by symfonyProcess.pdf', [
+                    'Content-Type' => 'application/pdf',
+                ]);*/
+        } catch (ProcessFailedException $exception) {
+            echo $exception->getMessage();
+        }
+   }
+   
     public function chromePdf($url='https://github.com'){
 
         $browserFactory = new BrowserFactory('chrome');
@@ -180,28 +244,7 @@ class HomeController extends Controller
 
     
 
-     public function symfonyProcess(){
-       //wkhtmltopdf http://google.com google.pdf 
-            $process = new Process(['wkhtmltopdf', 'https://droub.net', 'droub.pdf']);
-        // $process = new Process(['wkhtmltopdf', '-', '-']);
-      //   $html="test";
-        //$process->setInput($html);
-
-        try {
-            // wait for process execution
-            $process->mustRun();
-
-              $pdf = $process->getOutput();
-             echo "we generated awesome PDF by symfonyProcess look at public folder 😄 ";
-             /* return response()->streamDownload(function () use (&$pdf) {
-                    echo $pdf;
-                }, 'My awesome PDF by symfonyProcess.pdf', [
-                    'Content-Type' => 'application/pdf',
-                ]);*/
-        } catch (ProcessFailedException $exception) {
-            echo $exception->getMessage();
-        }
-   }
+     
 
     public function htmlTopdf(){
         /*$input = new UrlInput();
@@ -238,46 +281,7 @@ class HomeController extends Controller
             $output->download();
     }
 
-    public function runProsses(){
-        $html = '<html><body>Test to my awesome PDF 😄</body></html>';
-
-        $descriptors = [
-            0 => ['pipe', 'r'],  // we will write to stdin
-            1 => ['pipe', 'w'],  // we will read from stdout
-            2 => ['pipe', 'w'],  // we will also read from stderr
-        ];
-
-        // this array will contain three pointers to all three pipes
-        $pipes = [];
-
-        // we're starting the process now
-        $process = proc_open('wkhtmltopdf - -', $descriptors, $pipes);
-        if (is_resource($process)) {
-            // the process has been opened, we can send input data
-            fwrite($pipes[0], $html);
-
-            // you have to close the stream after use
-            fclose($pipes[0]);
-
-            // now we're reading binary output
-            // PHP will wait until the stream is complete
-            $pdf = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-            echo "done 😄 download your pdf ";
-            $errors = stream_get_contents($pipes[2]);
-            fclose($pipes[2]);
-
-            // all pipes must be closed now to avoid a deadlock
-            $exitCode = proc_close($process);
-            return response()->streamDownload(function () use (&$pdf) {
-                    echo $pdf;
-                }, 'My awesome PDF.pdf', [
-                    'Content-Type' => 'application/pdf',
-                ]);
-          //   return $pdf->download('droub.pdf');
-        }
-
-    }
+    
 
     public function test(){
         // open browser
